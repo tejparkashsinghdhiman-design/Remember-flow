@@ -1,0 +1,106 @@
+name: Build APK
+
+# Builds and tests the app on every push and pull request, and on demand from the Actions tab
+# ("Run workflow"). The installable APK is uploaded as a downloadable workflow artifact.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run unit tests
+        run: ./gradlew --no-daemon testDebugUnitTest
+
+      - name: Decode release keystore (only when secrets are configured)
+        id: keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/release.keystore"
+            echo "RELEASE_KEYSTORE_PATH=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "No signing secrets found: the APK will be signed with the temporary debug key."
+          fi
+
+      - name: Build release APK
+        env:
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          RF_VERSION_CODE: ${{ github.run_number }}
+          RF_VERSION_NAME: 1.0.${{ github.run_number }}
+        run: ./gradlew --no-daemon assembleRelease
+
+      - name: Name and verify the APK
+        id: apk
+        run: |
+          set -euo pipefail
+          SRC=$(ls app/build/outputs/apk/release/*.apk | head -n 1)
+          NAME="RememberFlow-1.0.${{ github.run_number }}.apk"
+          mkdir -p dist
+          cp "$SRC" "dist/$NAME"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+          AAPT2=$(ls -d "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -n 1)
+          APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n 1)
+
+          echo "### APK verification" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          ls -l "dist/$NAME" | tee -a "$GITHUB_STEP_SUMMARY"
+          sha256sum "dist/$NAME" | tee -a "$GITHUB_STEP_SUMMARY"
+          "$AAPT2" dump badging "dist/$NAME" | grep -E "^package:|sdkVersion|targetSdkVersion|application-label:" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "--- permissions" | tee -a "$GITHUB_STEP_SUMMARY"
+          "$AAPT2" dump permissions "dist/$NAME" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "--- signature" | tee -a "$GITHUB_STEP_SUMMARY"
+          "$APKSIGNER" verify --print-certs "dist/$NAME" | head -n 3 | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+          # The privacy promise: no network permission anywhere in the merged manifest.
+          if "$AAPT2" dump permissions "dist/$NAME" | grep -q "android.permission.INTERNET"; then
+            echo "::error::APK requests INTERNET permission, which RememberFlow must never do."
+            exit 1
+          fi
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RememberFlow-apk
+          path: dist/${{ steps.apk.outputs.name }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: app/build/reports/tests/testDebugUnitTest
+          if-no-files-found: ignore
+          retention-days: 7
