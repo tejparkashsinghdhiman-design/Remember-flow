@@ -1,0 +1,83 @@
+name: Feature request
+description: Suggest an improvement or a new feature for RememberFlow
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion. A few things to know before you write it up:
+
+        - RememberFlow is deliberately **offline**. It declares no `INTERNET` permission and has no cloud sync, analytics or accounts, and its CI build fails if network access is added. Ideas that need network access are unlikely to be accepted, but you are welcome to make the case.
+        - This issue is public. Please don't include real reminder contents or personal data.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the existing issues and the README's "Known limitations" and could not find this request already covered.
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem being addressed
+      description: What are you trying to do that is hard, impossible or unreliable today? Describe the situation rather than the solution.
+      placeholder: "When I miss a notification there is no quick way to push the reminder back by a few minutes."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like it to work? Be as specific as you can about the behaviour and what the user sees. Sketches are welcome.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other ways to solve the problem, workarounds you use today, or how other apps handle it.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Notifications
+        - Alarm scheduling and reliability
+        - Recurrence and stages
+        - Reminder editor
+        - Home screen or live clock
+        - Timeline
+        - Search
+        - Reliability screen
+        - Accessibility
+        - Appearance and theme
+        - Data storage / export / import
+        - Build / CI / release process
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you like to work on this yourself?
+      description: Contributions are welcome. Please see CONTRIBUTING.md first, and for larger changes wait for a go-ahead on this issue before starting.
+      options:
+        - "Yes - I would like to implement it"
+        - "Maybe - with some guidance"
+        - "No - I am only suggesting it"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Mockups, links, screenshots, or anything else that helps. Use dummy reminders and remove personal data.
