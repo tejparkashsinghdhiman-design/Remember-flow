@@ -122,3 +122,23 @@ Kotlin 2.0, Jetpack Compose (Material 3), `AlarmManager` exact alarms, SQLite, m
 - Reminders are time-based only (no location triggers) and there is no cloud sync or backup by design.
 - Reordering stages uses up/down arrows rather than drag-and-drop.
 - Notifications offer a **Pause** action but no snooze button.
+
+## Contributing and security
+
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first. Report bugs and request features through the issue forms. To report a security problem privately, follow [SECURITY.md](SECURITY.md) and do not open a public issue.
+
+## Licence
+
+The original RememberFlow source code and documentation in this repository are released under the [MIT licence](LICENSE).
+
+**The MIT licence applies only to that original work.** It does not relicense any third-party material, which stays under its own terms:
+
+| Third-party material | Where it is | Licence |
+| --- | --- | --- |
+| Inter font | `app/src/main/res/font/inter_*.ttf` | SIL Open Font License 1.1, see [`licenses/Inter-OFL.txt`](licenses/Inter-OFL.txt) |
+| JetBrains Mono font | `app/src/main/res/font/jetbrains_mono_*.ttf` | SIL Open Font License 1.1, see [`licenses/JetBrainsMono-OFL.txt`](licenses/JetBrainsMono-OFL.txt) |
+| Material icon path data | A few glyphs in `ui/components/AppIcons.kt` (standard 24×24 Material icon geometry) | Apache License 2.0 (Google Material Icons) |
+| Libraries downloaded by Gradle (AndroidX, Jetpack Compose, Kotlin, kotlinx.coroutines) | Not stored in this repository; included in the built APK | Each under its own licence (Apache License 2.0) |
+| JUnit 4 | Tests only; not included in the APK | Eclipse Public License 1.0 |
+
+The two font families remain under the SIL Open Font License, and are not covered by the MIT licence. Please consult each project for its authoritative licence terms.

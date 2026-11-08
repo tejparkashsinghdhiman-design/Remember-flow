@@ -1,0 +1,143 @@
+name: Bug report
+description: Report something in RememberFlow that is broken or behaves unexpectedly
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug.
+
+        **Privacy warning:** this issue is public. Do **not** include the real contents of your reminders (titles or notes), names, phone numbers, locations, account details or any credentials in the description, logs or screenshots. Replace them with placeholder text and crop or blur screenshots first.
+
+        **Security problems** (for example, a way to read someone's reminders) must **not** be reported here. Please follow the private process in [SECURITY.md](https://github.com/tejparkashsinghdhiman-design/Remember-flow/blob/main/SECURITY.md).
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the existing issues and could not find this bug already reported.
+          required: true
+        - label: I removed private reminder contents, personal data and credentials from everything I am posting.
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug description
+      description: What went wrong? Include what you expected to happen and what actually happened.
+      placeholder: "A reminder with the stages 10 minutes → 1 hour should have fired at 09:10 but did not."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps that reliably trigger the problem, starting from a fresh app state if possible. Use dummy reminder text.
+      placeholder: |
+        1. Open RememberFlow and tap "New reminder"
+        2. Title: "Test", start in 2 minutes
+        3. Choose the custom recurrence 10 minutes → 1 hour
+        4. Save, then close the app
+        5. Wait for the reminder time
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: Expected and actual behaviour
+      description: Optional if already clear from the description above.
+      placeholder: |
+        Expected: a notification at the scheduled time.
+        Actual: nothing appeared until I opened the app.
+
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+      description: "Find it in Android Settings → Apps → RememberFlow → App info, or from the APK file name (for example RememberFlow-1.0.12.apk or RememberFlow-v1.0.0.apk). If you built from source, give the commit hash."
+      placeholder: "1.0.12"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install-source
+    attributes:
+      label: How did you install it?
+      options:
+        - GitHub Release APK
+        - APK from a GitHub Actions workflow artifact
+        - Built from source (Android Studio or Gradle)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: android-version
+    attributes:
+      label: Android version
+      description: Android Settings → About phone. Include the manufacturer's UI version if there is one (for example One UI or MIUI).
+      placeholder: "Android 14 (API 34), One UI 6.1"
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      description: Manufacturer and model, or the emulator image if you used one.
+      placeholder: "Xiaomi Redmi Note 12, or Pixel 7 emulator"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      description: Choose the closest match.
+      options:
+        - Notifications missing / late / duplicated
+        - Alarm scheduling or exact alarms
+        - Reminders after reboot / app update / time or time zone change
+        - Recurrence and stages (custom flows and presets)
+        - Reminder editor (create / edit / pause / resume / delete)
+        - Home screen or live clock
+        - Timeline
+        - Search
+        - Reliability screen (permission and battery status)
+        - Data storage or data loss
+        - Accessibility
+        - Layout / theme / visual glitch
+        - Build / CI / release workflow
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: reliability
+    attributes:
+      label: Reliability screen status
+      description: If this involves notifications or timing, tell us what the app's Reliability screen shows for notification permission, exact alarms ("Alarms & reminders") and battery optimisation.
+      placeholder: "Notifications: allowed. Exact alarms: allowed. Battery optimisation: restricted."
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste only the relevant lines from `adb logcat` or a crash report. Check them for personal data first.
+      render: text
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or screen recordings
+      description: Drag and drop files here. Use dummy reminders, and blur or crop anything private.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Anything else that might help, such as whether it happens every time, or only on battery or with a particular Do Not Disturb setting.
